@@ -1,0 +1,56 @@
+{% load i18n %}
+{% load static %}
+{% load bootstrap4 %}       {# import bootstrap4/bootstrap3 #}
+{% bootstrap_css %}         {# Embed Bootstrap CSS #}
+{% bootstrap_javascript jquery='full' %}  {# Embed Bootstrap JS+jQuery #}
+
+{% block extrahead %}
+{% endblock %}
+<html>
+<head>
+<title>{% trans "Personnes chez soi" %}</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static '/esms/w3.css' %}">
+    <link rel="stylesheet" href="{% static '/esms/w3-theme-black.css' %}">
+</head>
+
+<body>
+
+    <header class="w3-row w3-theme-l1" id="myHeader">
+         <div class="w3-threequarter w3-padding">
+              {% block titre %}
+              {% endblock %}
+         </div>
+
+         <div class="w3-quarter w3-center">
+         <form action="{% url 'set_language' %}" method="post">
+         {% csrf_token %}
+          <input name="next" type="hidden" value="{{ index }}" />
+          {% get_current_language as LANGUAGE_CODE %}
+          {% get_available_languages as LANGUAGES %}
+          {% get_language_info_list for LANGUAGES as languages %}
+          {% for language in languages %}
+              {% if language.code != LANGUAGE_CODE %}
+                <input type="submit" class="w3-button w3-theme-l2" name="language" value="{{ language.code }}" />
+              {% endif %}
+          {% endfor %}
+          </form>
+         </div>
+</header>
+
+    <div id="container">
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alert alert-{{msg.level_tag}}" role="alert">
+                {{msg.message}}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    {% block maincontent %}
+    {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+{% extends 'personne_base.html' %}
+{% load i18n %}
+{% block extrahead %}
+{{ form.media }}
+{{ libe_form.media }}
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="w3-container">
+   <h2 class="w3-amber">#{{ personne.codeGRC }}- Nouveaux delits et Délits enregistrés dans la BD</h2>
+    <div class="w3-twothird w3-center">
+        <form method="POST" class="delits-form" enctype="multipart/form-data" id="delit">
+        {% csrf_token %}
+            <table class="w3-table-all">
+                <th><td colspan="2"><a href="{% url 'Rechercherviol' %}"
+                                       target="Codes Violation/CC"
+                                       onclick="window.open('', 'Codes Violation/CC', 'width=700,height=250,status=yes,resizable=yes,scrollbars=no,toolbar=no')"
+                                        >Recherche de code de violation</a></td>
+                </th>
+            {{ form.as_table }}
+            <tr><td><button type="submit" class="w3-button w3-amber" name="Savequit">Save and quit</button></td>
+                <td><button type="submit" class="w3-button w3-orange" name="Savedelit">Save et ajouter un autre delit / libération</button></td>
+            </tr>
+            </table>
+        </form>
+    </div>
+    <div class="w3-third">
+
+        <form method="POST" class="libe-form" enctype="multipart/form-data" id="liberation">
+        {% csrf_token %}
+            <table class="w3-table-all">
+            {{ libe_form.as_table }}
+            <tr><td><button type="submit" class="w3-button w3-amber" name="Savelibequit">Save and quit</button></td>
+            <td><button type="submit" class="w3-button w3-orange" name="Savelibe">Save et ajouter un autre delit / libération</button></td>
+            </tr>
+            </table>
+        </form>
+
+        <div class="w3-padding-16 w3-theme-l4">
+            <h3>Délits enregistrés dans la BD</h3>
+            <table class="w3-table-all">
+                <tr>
+                    <th>date sentence</th>
+                    <th>ordre</th>
+                    <th>codeCCdelit</th>
+                    <th>violation</th>
+                </tr>
+            {% for delit in delits %}
+            <tr>
+                <td>{{ delit.date_sentence }}</td>
+                <td>{{ delit.ordre_delit }}</td>
+                <td>{{ delit.codeCCdelit }}</td>
+                <td>{{ delit.violation_id }}</td>
+            </tr>
+            {% endfor %}
+            </table>
+            <h3>Libérations enregistrées dans la BD</h3>
+            <table class="w3-table-all">
+                <tr>
+                    <th>date libération</th>
+                </tr>
+            {% for liberation in liberations %}
+            <tr>
+                <td>{{ liberation.date_liberation }}</td>
+            </tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
