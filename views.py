@@ -2,20 +2,19 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import render, redirect
-from grc.models import Chezsoi, Personnegrc, Municipalite, Liberation
+from .models import Chezsoi, Personnegrc, Municipalite, Liberation
 from django.contrib import messages
-from .forms import PersonneForm, ChezsoiForm, LiberationForm, FermeForm
+from .forms import PersonneForm, ChezsoiForm, LiberationForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from bootstrap_datepicker_plus import DateTimePickerInput
-from django.views import generic
 import datetime
 #from django.db import connection
 
 
 ## Affiche la liste des dossiers encore ouverts
-# @login_required(login_url=settings.LOGIN_URI)
+@login_required(login_url=settings.LOGIN_URI)
 def liste_personne(request):
-    entete = "Liste de toutes les personnes"
+    entete = settings.SITE_HEADER + " : Listing"
     personne_list = Personnegrc.objects.filter(ferme=0)
     paginator = Paginator(personne_list, 100)
     page = request.GET.get('page')
@@ -44,7 +43,7 @@ def personne_ferme(request, pk):
 @login_required(login_url=settings.LOGIN_URI)
 def personne_edit(request, pk):
     personne = Personnegrc.objects.get(pk=pk)
-    entete = "Mise a jour de la personne " + personne.codeGRC
+    entete = settings.SITE_HEADER + " : Mise à jour"
     date_old_sentence = datetime.date(1900, 1, 1)
     oldfps = personne.oldpresencefps
     if Chezsoi.objects.filter(personnegrc=personne).exists():
@@ -55,8 +54,8 @@ def personne_edit(request, pk):
         form = PersonneForm(request.POST, instance=personne)
         if form.is_valid():
             personne = form.save(commit=False)
-            personne.assistant = request.user
-            #print(request.POST.get('dateprint2').__class__)
+            personne.RA = request.user
+            # print(request.POST.get('dateprint2').__class__)
             newfps = request.POST.get('newpresencefps')
             date_new_sentence = datetime.date(1900, 1, 1)
             if request.POST.get('dateverdictder') != "":
@@ -66,10 +65,12 @@ def personne_edit(request, pk):
 
             if timediff.days > 1:
                 personne.newdelit = 1
+                messages.success(request, "La personne a été mise à jour.")
             else:
                 personne.newdelit = 0
+                personne.ferme = 1
+                messages.success(request, "La personne a été mise à jour et le dossier fermé.")
             personne.save()
-            messages.success(request, "La personne a été mise à jour.")
             if (date_new_sentence > date_old_sentence) | (oldfps == 0 and newfps == 1):
                 return redirect('personne_delits', personne.id)
             else:
@@ -90,7 +91,8 @@ def personne_delits(request, pk):
     personne = Personnegrc.objects.get(pk=pk)
     delits = Chezsoi.objects.filter(personnegrc=personne).order_by('-date_sentence')
     liberations = Liberation.objects.filter(personnegrc=personne).order_by('-date_liberation')
-    # Fait la lsite des villes de la province correspondante et ajoute les autres
+    entete = settings.SITE_HEADER + " : Délits "
+    # Fait la liste des villes de la province correspondante et ajoute les autres
     ville = Municipalite.objects.filter(Q(province=personne.province) | Q(province=5))
     form = ChezsoiForm()
     form.fields['lieu_sentence'].queryset = ville
@@ -135,7 +137,8 @@ def personne_delits(request, pk):
                                                     'delits': delits,
                                                     'liberations': liberations,
                                                     'form': form,
-                                                    'libe_form': libe_form})
+                                                    'libe_form': libe_form,
+                                                    'entete' : entete})
 
 
 
