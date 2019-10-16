@@ -94,15 +94,15 @@ def personne_delits(request, pk):
     entete = settings.SITE_HEADER + " : Délits "
     # Fait la liste des villes de la province correspondante et ajoute les autres
     ville = Municipalite.objects.filter(Q(province=personne.province) | Q(province=5))
-    form = ChezsoiForm()
+    form = ChezsoiForm(prefix='delit')
     form.fields['lieu_sentence'].queryset = ville
     form.fields['date_sentence'].widget = DateTimePickerInput(format='%d/%m/%Y')
-    libe_form = LiberationForm()
+    libe_form = LiberationForm(prefix='libe')
     libe_form.fields['date_liberation'].widget = DateTimePickerInput(format='%d/%m/%Y')
     if request.method == 'POST':
-        '''
         if 'Savelibe' or 'Savelibequit' in request.POST:
-            libe_form = LiberationForm(request.POST)
+            libe_form = LiberationForm(request.POST, prefix='libe')
+            form = ChezsoiForm(prefix='delit')
             if libe_form.is_valid():
                 libe = libe_form.save(commit=False)
                 libe.RA = request.user
@@ -113,35 +113,29 @@ def personne_delits(request, pk):
                     return redirect('liste_personne')
                 elif 'Savelibe':
                     return redirect('personne_delits', personne.id )
-            else:
-                messages.error(request, "Il y a une erreur dans l'enregistrement de la liberation")
-                return redirect('personne_delits', personne.id )
-        elif 'Savequit' or 'Savedelit' in request.POST:
-        '''
-        if 'Savequit' or 'Savedelit' in request.POST:
-            form = ChezsoiForm(request.POST)
-            if form.is_valid():
-                delit = form.save(commit=False)
-                delit.RA = request.user
-                delit.personnegrc = personne
-                delit.province = personne.province
-                delit.nouveaudelit = 1
-                delit.save()
-                messages.success(request, "Les delits du # " + personne.codeGRC + " ont été mis à jour.")
-                if 'Savequit' in request.POST:
-                    return redirect('liste_personne')
-                else:
-                    return redirect('personne_delits', personne.id )
-            else:
-                messages.error(request, "Il y a une erreur dans l'enregistrement du delit")
-                return redirect('personne_delits', personne.id )
-
+        if not libe_form.is_valid():
+            if 'Savequit' or 'Savedelit' in request.POST:
+                form = ChezsoiForm(request.POST, prefix='delit')
+                libe_form = LiberationForm(prefix='libe')
+                if form.is_valid():
+                    delit = form.save(commit=False)
+                    delit.RA = request.user
+                    delit.personnegrc = personne
+                    delit.province = personne.province
+                    delit.nouveaudelit = 1
+                    delit.save()
+                    messages.success(request, "Les delits du # " + personne.codeGRC + " ont été mis à jour.")
+                    if 'Savequit' in request.POST:
+                        return redirect('liste_personne')
+                    else:
+                        return redirect('personne_delits', personne.id)
+        if not libe_form.is_valid():
+            messages.error(request, "Il y a une erreur dans l'enregistrement de la liberation")
+        if not form.is_valid():
+            messages.error(request, "Il y a une erreur dans l'enregistrement du delit")
     return render(request, "personne_delits.html", {'personne': personne,
                                                     'delits': delits,
                                                     'liberations': liberations,
                                                     'form': form,
                                                     'libe_form': libe_form,
                                                     'entete' : entete})
-
-
-
