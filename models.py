@@ -66,10 +66,10 @@ class Personnegrc(models.Model):
     alias = models.IntegerField(default=1, verbose_name=_("Présence ancien alias"),)
     dateprint1 = models.DateField(verbose_name=_("Ancienne date print"),)
     oldpresencefps = models.IntegerField(verbose_name=_("Présence ancien FPS"),)
-    dateprint2 = models.DateField(verbose_name=_("Date print. Laisser vide si pas de fichier"), blank=True, null=True)
+    dateprint2 = models.DateField(verbose_name=_("Date print. Laisser vide si pas de fichier (jj/mm/aaaa)"), blank=True, null=True)
     newdelit = models.BooleanField(default=1, verbose_name=_("Présence de délits après la date du dernier verdict rentré"),)
     newpresencefps = models.BooleanField(verbose_name=_("Présence de FPS en 2019/20. Cocher si oui"))
-    dateverdictder = models.DateField(verbose_name=_("Date du dernier verdict présent dans la fiche. Laisser vide si pas de fichier"), blank=True, null=True)
+    dateverdictder = models.DateField(verbose_name=_("Date du dernier verdict présent dans la fiche. Laisser vide si pas de fichier (jj/mm/aaaa)"), blank=True, null=True)
     ferme = models.BooleanField()
     updated_at = models.DateTimeField(auto_now=True)
     RA = models.ForeignKey(User, on_delete=models.DO_NOTHING)
@@ -84,7 +84,7 @@ class Personnegrc(models.Model):
 # Une fiche pour chaque délit de chaque personne.
 class Chezsoi(models.Model):
     personnegrc = models.ForeignKey(Personnegrc, on_delete=models.CASCADE)
-    date_sentence = models.DateField(verbose_name=_("Date"))
+    date_sentence = models.DateField(verbose_name=_("Date (jj/mm/aaaa)"))
     type_tribunal = models.ForeignKey(Tribunal, on_delete=models.DO_NOTHING, verbose_name="Type de tribunal")
     lieu_sentence = models.ForeignKey(Municipalite, on_delete=models.DO_NOTHING, verbose_name="Lieu du verdict")
     ordre_delit = models.IntegerField(default=1, verbose_name=_("Ordre"),)
@@ -119,7 +119,7 @@ class Chezsoi(models.Model):
 # Une fiche pour chaque liberation de chaque personne.
 class Liberation(models.Model):
     personnegrc = models.ForeignKey(Personnegrc, on_delete=models.CASCADE)
-    date_liberation = models.DateField(verbose_name=_("Date de la libération"))
+    date_liberation = models.DateField(verbose_name=_("Date de la libération (jj/mm/aaaa)"))
     type = models.BooleanField(verbose_name=_("Libération absolue? Cocher si oui"))
     RA = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)

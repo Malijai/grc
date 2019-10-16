@@ -96,9 +96,9 @@ def personne_delits(request, pk):
     ville = Municipalite.objects.filter(Q(province=personne.province) | Q(province=5))
     form = ChezsoiForm(prefix='delit')
     form.fields['lieu_sentence'].queryset = ville
-    form.fields['date_sentence'].widget = DateTimePickerInput(format='%d/%m/%Y')
+    # form.fields['date_sentence'].widget = DateTimePickerInput(format='%d/%m/%Y')
     libe_form = LiberationForm(prefix='libe')
-    libe_form.fields['date_liberation'].widget = DateTimePickerInput(format='%d/%m/%Y')
+    # libe_form.fields['date_liberation'].widget = DateTimePickerInput(format='%d/%m/%Y')
     if request.method == 'POST':
         if 'Savelibe' or 'Savelibequit' in request.POST:
             libe_form = LiberationForm(request.POST, prefix='libe')
