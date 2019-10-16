@@ -100,6 +100,7 @@ def personne_delits(request, pk):
     libe_form = LiberationForm()
     libe_form.fields['date_liberation'].widget = DateTimePickerInput(format='%d/%m/%Y')
     if request.method == 'POST':
+        '''
         if 'Savelibe' or 'Savelibequit' in request.POST:
             libe_form = LiberationForm(request.POST)
             if libe_form.is_valid():
@@ -116,6 +117,8 @@ def personne_delits(request, pk):
                 messages.error(request, "Il y a une erreur dans l'enregistrement de la liberation")
                 return redirect('personne_delits', personne.id )
         elif 'Savequit' or 'Savedelit' in request.POST:
+        '''
+        if 'Savequit' or 'Savedelit' in request.POST:
             form = ChezsoiForm(request.POST)
             if form.is_valid():
                 delit = form.save(commit=False)
