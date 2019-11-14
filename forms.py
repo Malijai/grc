@@ -8,7 +8,7 @@ from .models import Personnegrc, Chezsoi, Liberation
 class PersonneForm(forms.ModelForm):
     class Meta:
         model = Personnegrc
-        fields = ('dateprint2', 'dateverdictder', 'newpresencefps')
+        fields = ('dateprint2', 'dateverdictder', 'newpresencefps','datedeces')
         exclude = ('codeGRC', 'province', 'delit', 'dateprint1', 'oldpresencefps', 'assistant', 'newdelit')
 
 

@@ -71,6 +71,7 @@ class Personnegrc(models.Model):
     newpresencefps = models.BooleanField(verbose_name=_("Présence de FPS en 2019/20. Cocher si oui"))
     dateverdictder = models.DateField(verbose_name=_("Date du dernier verdict présent dans la fiche. Laisser vide si pas de fichier (jj/mm/aaaa)"), blank=True, null=True)
     ferme = models.BooleanField()
+    datedeces = models.DateField(verbose_name=_("Si décédé indiquer la date ici (jj/mm/aaaa)"), blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
     RA = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
